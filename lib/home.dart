@@ -2,6 +2,7 @@ import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:promi/promiform.dart';
 import 'package:promi/summary.dart';
+import 'package:promi/settings.dart';
 
 class Home extends StatefulWidget {
   final String?
@@ -17,6 +18,8 @@ class _HomeState extends State<Home> {
   String? _reservedAppointment; // Local state to store appointment details
 
   // Additional variables to store details from the form
+  String studentNumber = '';
+  String fullName = '';
   String reason = '';
   String balance = '';
   String amountToPay = '';
@@ -79,10 +82,10 @@ class _HomeState extends State<Home> {
                   // If result is returned, update the status box and store the details
                   if (result != null) {
                     setState(() {
-                      _reservedAppointment = result[
-                          'reservedAppointment']; // Update reserved appointment
-                      reason = result[
-                          'reason']; // Assuming these fields are returned from the form
+                      _reservedAppointment = result['reservedAppointment'];
+                      studentNumber = result['studentNumber'];
+                      fullName = result['fullName']; // Update reserved appointment
+                      reason = result['reason']; // Assuming these fields are returned from the form
                       balance = result['balance'];
                       amountToPay = result['amountToPay'];
                       timesApplied = result['timesApplied'];
@@ -134,11 +137,9 @@ class _HomeState extends State<Home> {
                     width: double.infinity, // Makes the box take full width
                     padding: EdgeInsets.symmetric(
                         vertical: 15), // Vertical padding only
-
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(2, 46, 6, 1), // Background color
-                      borderRadius:
-                          BorderRadius.circular(10), // Rounded corners
+                      borderRadius: BorderRadius.circular(10), // Rounded corners
                     ),
                     alignment: Alignment.center, // Centers the text
                     child: Text(
@@ -164,7 +165,9 @@ class _HomeState extends State<Home> {
                             balance: balance,
                             amountToPay: amountToPay,
                             timesApplied: timesApplied,
-                            isPaidOnTime: isPaidOnTime, firstName: '', lastName: '', studentNumber: '',
+                            isPaidOnTime: isPaidOnTime,
+                            studentNumber: studentNumber,
+                            fullName: fullName,
                           ),
                         ),
                       );
@@ -174,8 +177,8 @@ class _HomeState extends State<Home> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      minimumSize: Size(
-                          double.infinity, 69), // Full width & fixed height
+                      minimumSize:
+                          Size(double.infinity, 69), // Full width & fixed height
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -199,6 +202,32 @@ class _HomeState extends State<Home> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0, // Home is selected by default
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Home()),
+            );
+          } else if (index == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Settings()),
+            );
+          }
+        },
       ),
     );
   }

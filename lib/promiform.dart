@@ -15,6 +15,8 @@ class _PromiformState extends State<Promiform> {
   bool? _isPaidOnTime;
 
   // Separate controllers for each text field
+  TextEditingController _studentNumber = TextEditingController();
+  TextEditingController _fullName = TextEditingController();
   TextEditingController _reasonController = TextEditingController();
   TextEditingController _balanceController = TextEditingController();
   TextEditingController _amountToPayController = TextEditingController();
@@ -75,7 +77,8 @@ class _PromiformState extends State<Promiform> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-
+              _buildTextField('Student Number', _studentNumber, 'Student Number'),
+              _buildTextField('Full Name', _fullName, 'Dela Cruz, Juan'),
               _buildTextField('Reason of Promissory', _reasonController,
                   'Brief explanation'),
               _buildTextField('Balance', _balanceController, 'Tuition balance'),
@@ -123,6 +126,8 @@ class _PromiformState extends State<Promiform> {
                   onPressed: () {
                     if (_dateController.text.isNotEmpty &&
                         _selectedTimeSlot != null &&
+                        _studentNumber.text.isNotEmpty &&
+                        _fullName.text.isNotEmpty &&
                         _reasonController.text.isNotEmpty &&
                         _balanceController.text.isNotEmpty &&
                         _amountToPayController.text.isNotEmpty &&
@@ -130,8 +135,11 @@ class _PromiformState extends State<Promiform> {
                         _isPaidOnTime != null) {
                       //it will show on status box and if removed, matanggal man sa summary
                       String appointmentDetails =
+                          //'Student Number: ${_firstName}'
                           'Date: ${_dateController.text}\n'
                           'Time: $_selectedTimeSlot\n'
+                          'Student Number: ${_studentNumber.text}\n'
+                          'Full Name: ${_fullName.text}\n'
                           'Reason: ${_reasonController.text}\n'
                           'Balance: ${_balanceController.text}\n'
                           'Amount to Pay: ${_amountToPayController.text}\n'

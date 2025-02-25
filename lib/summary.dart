@@ -8,9 +8,7 @@ class Summary extends StatefulWidget {
   final String amountToPay;
   final String timesApplied;
   final bool isPaidOnTime;
-  final String firstName; // Added
-  final String lastName; // Added
-  final String studentNumber; // Added
+  final String studentNumber;
 
   const Summary({
     super.key,
@@ -20,9 +18,8 @@ class Summary extends StatefulWidget {
     required this.amountToPay,
     required this.timesApplied,
     required this.isPaidOnTime,
-    required this.firstName, // Added
-    required this.lastName, // Added
-    required this.studentNumber, // Added
+    required this.studentNumber,
+    required String fullName,
   });
 
   @override
@@ -30,6 +27,34 @@ class Summary extends StatefulWidget {
 }
 
 class _SummaryState extends State<Summary> {
+  void _confirmCancelAppointment() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Cancel Appointment"),
+          content: const Text("Are you sure you want to cancel your appointment?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("No"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (BuildContext context) => const Home()),
+                );
+              },
+              child: const Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,30 +66,13 @@ class _SummaryState extends State<Summary> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Display user details at the top
-            Text(
-              'Student Number: ${widget.studentNumber}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'Name: ${widget.firstName} ${widget.lastName}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
             const SizedBox(height: 20),
-
             if (widget.reservedAppointment != null && widget.reservedAppointment!.isNotEmpty)
               Text('Reserved Appointment Details: \n${widget.reservedAppointment}', style: const TextStyle(fontSize: 18)),
-
             const SizedBox(height: 10),
-
             ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (BuildContext context) => const Home()),
-                );
-              },
-              child: const Text('Go Back'),
+              onPressed: _confirmCancelAppointment,
+              child: const Text('Cancel Appointment'),
             ),
           ],
         ),
