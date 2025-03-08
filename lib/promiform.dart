@@ -136,15 +136,15 @@ class _PromiformState extends State<Promiform> {
                       //it will show on status box and if removed, matanggal man sa summary
                       String appointmentDetails =
                           //'Student Number: ${_firstName}'
-                          'Date: ${_dateController.text}\n'
-                          'Time: $_selectedTimeSlot\n'
-                          'Student Number: ${_studentNumber.text}\n'
-                          'Full Name: ${_fullName.text}\n'
-                          'Reason: ${_reasonController.text}\n'
-                          'Balance: ${_balanceController.text}\n'
-                          'Amount to Pay: ${_amountToPayController.text}\n'
-                          'Times Applied: ${_timesAppliedController.text}\n'
-                          'Paid On Time: ${_isPaidOnTime! ? "Yes" : "No"}'; // Fix concatenation
+                          'Date: \n ${_dateController.text}\n\n'
+                          'Time: \n $_selectedTimeSlot\n\n'
+                          'Student Number: \n ${_studentNumber.text}\n\n'
+                          'Full Name: \n ${_fullName.text}\n\n'
+                          'Reason: \n ${_reasonController.text}\n\n'
+                          'Balance: \n ${_balanceController.text}\n\n'
+                          'Amount to Pay: \n ${_amountToPayController.text}\n\n'
+                          'Times Applied: \n ${_timesAppliedController.text}\n\n'
+                          'Paid On Time: \n ${_isPaidOnTime! ? "Yes" : "No"}'; // Fix concatenation
 
                       // Navigate to Home and pass the appointment details
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -205,7 +205,7 @@ class _PromiformState extends State<Promiform> {
     );
   }
 
-  Future<void> _selectedDate() async {
+  Future<void> _selectedDate() async { //date picker
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),

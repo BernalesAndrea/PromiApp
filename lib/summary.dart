@@ -61,20 +61,22 @@ class _SummaryState extends State<Summary> {
       appBar: AppBar(
         title: const Text('Appointment Summary'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            if (widget.reservedAppointment != null && widget.reservedAppointment!.isNotEmpty)
-              Text('Reserved Appointment Details: \n${widget.reservedAppointment}', style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: _confirmCancelAppointment,
-              child: const Text('Cancel Appointment'),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                if (widget.reservedAppointment != null && widget.reservedAppointment!.isNotEmpty)
+                  Text('Reserved Appointment Details: \n${widget.reservedAppointment}', style: const TextStyle(fontSize: 18)),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: _confirmCancelAppointment,
+                  child: Center(child: const Text('Cancel Appointment')),
+                ),
+              ],
             ),
-          ],
         ),
       ),
     );
