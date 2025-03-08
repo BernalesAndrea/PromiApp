@@ -115,15 +115,18 @@ class _SettingsState extends State<Settings> {
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Color.fromRGBO(2, 46, 6, 1),
         currentIndex: 1, // Settings page is selected by default
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home, color: Colors.white,),
             label: 'Home',
+            backgroundColor: Colors.white,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings, color: Colors.white,),
             label: 'Settings',
+            backgroundColor: Colors.white,
           ),
         ],
         onTap: (index) {

@@ -62,14 +62,17 @@ class _SummaryState extends State<Summary> {
         title: const Text('Appointment Summary'),
       ),
       body: SingleChildScrollView(
+        
         child: Padding(
+        
           padding: const EdgeInsets.all(16.0),
             child: Column(
+              
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
                 if (widget.reservedAppointment != null && widget.reservedAppointment!.isNotEmpty)
-                  Text('Reserved Appointment Details: \n${widget.reservedAppointment}', style: const TextStyle(fontSize: 18)),
+                  Text('Reserved Appointment Details: \n\n${widget.reservedAppointment}', style: const TextStyle(fontSize: 18)),
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: _confirmCancelAppointment,

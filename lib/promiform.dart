@@ -64,7 +64,7 @@ class _PromiformState extends State<Promiform> {
                     const SizedBox(height: 10),
                     Column(
                       children: [
-                        _buildTimeSlotButton('8:00 AM - 12:00 NN'),
+                        _buildTimeSlotButton('8:00 AM - 11:30 PM'),
                         const SizedBox(height: 10),
                         _buildTimeSlotButton('1:00 PM - 5:00 PM'),
                       ],
@@ -205,18 +205,20 @@ class _PromiformState extends State<Promiform> {
     );
   }
 
-  Future<void> _selectedDate() async { //date picker
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
+  Future<void> _selectedDate() async { // Date picker
+  DateTime now = DateTime.now();
+  DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: now,
+    firstDate: DateTime(now.year, now.month, now.day), // Prevent past dates
+    lastDate: DateTime(2100),
+  );
 
-    if (picked != null) {
-      setState(() {
-        _dateController.text = picked.toString().split(" ")[0];
-      });
-    }
+  if (picked != null) {
+    setState(() {
+      _dateController.text = picked.toString().split(" ")[0];
+    });
   }
+}
+
 }
