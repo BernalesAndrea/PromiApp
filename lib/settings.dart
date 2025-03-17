@@ -93,6 +93,7 @@ class _SettingsState extends State<Settings> {
                       borderRadius: BorderRadius.circular(10),
                       color: const Color.fromRGBO(2, 46, 6, 1),
                     ),
+
                     child: const Center(
                       child: Text(
                         'Logout',
@@ -106,6 +107,7 @@ class _SettingsState extends State<Settings> {
                         ),
                       ),
                     ),
+                    
                   ),
                 ),
                 // Bottom Container (if needed for styling or additional elements)

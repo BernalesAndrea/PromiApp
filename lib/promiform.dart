@@ -15,7 +15,7 @@ class _PromiformState extends State<Promiform> {
   bool? _isPaidOnTime;
 
   // Separate controllers for each text field
-  TextEditingController _studentNumber = TextEditingController();
+  TextEditingController _courseYear = TextEditingController();
   TextEditingController _fullName = TextEditingController();
   TextEditingController _reasonController = TextEditingController();
   TextEditingController _balanceController = TextEditingController();
@@ -77,7 +77,7 @@ class _PromiformState extends State<Promiform> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              _buildTextField('Student Number', _studentNumber, 'Student Number'),
+              _buildTextField('Course & Year', _courseYear, 'BSIT 3'),
               _buildTextField('Full Name', _fullName, 'Dela Cruz, Juan'),
               _buildTextField('Reason of Promissory', _reasonController,
                   'Brief explanation'),
@@ -126,7 +126,7 @@ class _PromiformState extends State<Promiform> {
                   onPressed: () {
                     if (_dateController.text.isNotEmpty &&
                         _selectedTimeSlot != null &&
-                        _studentNumber.text.isNotEmpty &&
+                        _courseYear.text.isNotEmpty &&
                         _fullName.text.isNotEmpty &&
                         _reasonController.text.isNotEmpty &&
                         _balanceController.text.isNotEmpty &&
@@ -138,7 +138,7 @@ class _PromiformState extends State<Promiform> {
                           //'Student Number: ${_firstName}'
                           'Date: \n ${_dateController.text}\n\n'
                           'Time: \n $_selectedTimeSlot\n\n'
-                          'Student Number: \n ${_studentNumber.text}\n\n'
+                          'Course and Year: \n ${_courseYear.text}\n\n'
                           'Full Name: \n ${_fullName.text}\n\n'
                           'Reason: \n ${_reasonController.text}\n\n'
                           'Balance: \n ${_balanceController.text}\n\n'

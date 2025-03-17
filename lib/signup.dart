@@ -11,7 +11,7 @@ class Signup extends StatefulWidget {
 class _SignupState extends State<Signup> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController studentNumberController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   @override
@@ -48,7 +48,7 @@ class _SignupState extends State<Signup> {
                       SizedBox(height: 10),
                       _buildTextField(controller: lastNameController, label: 'Last Name', width: fieldWidth),
                       SizedBox(height: 10),
-                      _buildTextField(controller: studentNumberController, label: 'Student Number', width: fieldWidth),
+                      _buildTextField(controller: emailController, label: 'Email', width: fieldWidth),
                       SizedBox(height: 10),
                       _buildTextField(controller: passwordController, label: 'Password', width: fieldWidth, isPassword: true),
                       SizedBox(height: 16),

@@ -18,7 +18,7 @@ class _HomeState extends State<Home> {
   String? _reservedAppointment; // Local state to store appointment details
 
   // Additional variables to store details from the form
-  String studentNumber = '';
+  String courseYear = '';
   String fullName = '';
   String reason = '';
   String balance = '';
@@ -86,7 +86,7 @@ class _HomeState extends State<Home> {
                   if (result != null) {
                     setState(() {
                       _reservedAppointment = result['reservedAppointment'];
-                      studentNumber = result['studentNumber'];
+                      courseYear = result['courseYear'];
                       fullName = result['fullName']; // Update reserved appointment
                       reason = result['reason']; // Assuming these fields are returned from the form
                       balance = result['balance'];
@@ -169,7 +169,7 @@ class _HomeState extends State<Home> {
                             amountToPay: amountToPay,
                             timesApplied: timesApplied,
                             isPaidOnTime: isPaidOnTime,
-                            studentNumber: studentNumber,
+                            courseYear: courseYear,
                             fullName: fullName,
                           ),
                         ),

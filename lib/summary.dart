@@ -8,7 +8,7 @@ class Summary extends StatefulWidget {
   final String amountToPay;
   final String timesApplied;
   final bool isPaidOnTime;
-  final String studentNumber;
+  final String courseYear;
 
   const Summary({
     super.key,
@@ -18,7 +18,7 @@ class Summary extends StatefulWidget {
     required this.amountToPay,
     required this.timesApplied,
     required this.isPaidOnTime,
-    required this.studentNumber,
+    required this.courseYear,
     required String fullName,
   });
 
