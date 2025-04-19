@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:promi/home.dart';
+import 'package:promi/services/auth_service.dart';
 import 'package:promi/signup.dart';
+import 'package:lottie/lottie.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -32,11 +34,11 @@ class _LoginState extends State<Login> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'LOGO',
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
+              Lottie.asset('assets/Main.json',
+              width: 428,
+              height: 228,
+              fit: BoxFit.fill
+          ),
               const Text('Login', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               const Text('Please Sign in to continue.', style: TextStyle(fontSize: 16)),
@@ -49,14 +51,19 @@ class _LoginState extends State<Login> {
                 width: double.infinity,
                 height: 45,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => Home(),
-                        ),
+                  onPressed: () async {
+                    // if (_formKey.currentState!.validate()) {
+                    //   Navigator.of(context).pushReplacement(
+                    //     MaterialPageRoute(
+                    //       builder: (BuildContext context) => Home(),
+                    //     ),
+                    //   );
+                    // }
+                    await AuthService().signin(
+                      email: emailController.text, 
+                      password: passwordController.text, 
+                      context: context
                       );
-                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(2, 46, 6, 1),

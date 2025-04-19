@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:promi/home.dart';
 import 'package:promi/summary.dart';
@@ -26,13 +28,13 @@ class _PromiformState extends State<Promiform> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (BuildContext context) => Home()));
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     Navigator.of(context).pushReplacement(
+        //         MaterialPageRoute(builder: (BuildContext context) => Home()));
+        //   },
+        // ),
         title: const Text('Promissory Schedule'),
       ),
       body: SingleChildScrollView(
@@ -152,6 +154,21 @@ class _PromiformState extends State<Promiform> {
                                 reservedAppointment: appointmentDetails,
                               )));
                     }
+
+                    //promiform details
+                    addPromiFormDetails(
+                      _dateController.text.isNotEmpty
+                          ? DateTime.parse(_dateController.text.trim())
+                          : DateTime.now(),
+                      _selectedTimeSlot?.trim() ?? '',
+                      _courseYear.text.trim(),
+                      _fullName.text.trim(),
+                      _reasonController.text.trim(),
+                      _balanceController.text.trim(),
+                      _amountToPayController.text.trim(),
+                      _timesAppliedController.text.trim(),
+                      _isPaidOnTime ?? false,
+                    );
                   },
                   child: const Text('Submit'),
                 ),
@@ -164,6 +181,52 @@ class _PromiformState extends State<Promiform> {
       ),
     );
   }
+
+Future<void> addPromiFormDetails(
+  DateTime date,
+  String selectedTime,
+  String courseYear,
+  String fullName,
+  String reason,
+  String balance,
+  String amountToPay,
+  String timesApplied,
+  bool isPaidOnTime) async {
+
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    print("No user is logged in.");
+    return;
+  }
+
+  String userId = user.uid;
+
+  // Check if the user already has an appointment
+  var existingAppointment = await FirebaseFirestore.instance
+      .collection('promiform')
+      .where('userId', isEqualTo: userId)
+      .get();
+
+  if (existingAppointment.docs.isNotEmpty) {
+    print("User already has an appointment.");
+    return;
+  }
+
+  await FirebaseFirestore.instance.collection('promiform').add({
+    'userId': userId,
+    'date': Timestamp.fromDate(date),
+    'selectedTime': selectedTime,
+    'courseYear': courseYear,
+    'fullName': fullName,
+    'reason': reason,
+    'balance': balance,
+    'amountToPay': amountToPay,
+    'timesApplied': timesApplied,
+    'isPaidOnTime': isPaidOnTime,
+    'submittedAt': FieldValue.serverTimestamp(), // 🔥 Added this line
+  });
+}
+
 
   // Function to build text fields dynamically
   Widget _buildTextField(
@@ -205,20 +268,20 @@ class _PromiformState extends State<Promiform> {
     );
   }
 
-  Future<void> _selectedDate() async { // Date picker
-  DateTime now = DateTime.now();
-  DateTime? picked = await showDatePicker(
-    context: context,
-    initialDate: now,
-    firstDate: DateTime(now.year, now.month, now.day), // Prevent past dates
-    lastDate: DateTime(2100),
-  );
+  Future<void> _selectedDate() async {
+    // Date picker
+    DateTime now = DateTime.now();
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year, now.month, now.day), // Prevent past dates
+      lastDate: DateTime(2100),
+    );
 
-  if (picked != null) {
-    setState(() {
-      _dateController.text = picked.toString().split(" ")[0];
-    });
+    if (picked != null) {
+      setState(() {
+        _dateController.text = picked.toString().split(" ")[0];
+      });
+    }
   }
-}
-
 }

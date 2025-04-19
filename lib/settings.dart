@@ -1,149 +1,97 @@
 import 'package:flutter/material.dart';
 import 'package:promi/home.dart';
+import 'package:promi/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({super.key});
+class Setting extends StatelessWidget {
+  final String? reservedAppointment; // Receive reserved appointment data
 
-  @override
-  State<Settings> createState() => _SettingsState();
-}
+  const Setting({super.key, this.reservedAppointment});
 
-class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // Use the available width and height from constraints
-          final width = constraints.maxWidth;
-          final height = constraints.maxHeight;
-          return Container(
-            width: width,
-            height: height,
-            decoration: const BoxDecoration(
-              color: Color.fromRGBO(239, 179, 49, 1),
-            ),
-            child: Stack(
-              children: [
-                // LOGO positioned relative to the screen size
-                Positioned(
-                  top: height * 0.29375, // originally 188/640
-                  left: 0,
-                  right: 0,
-                  child: const Center(
-                    child: Text(
-                      'LOGO',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color.fromRGBO(0, 0, 0, 1),
-                        fontFamily: 'Inter',
-                        fontSize: 40,
-                        fontWeight: FontWeight.normal,
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ),
-                // Name
-                Positioned(
-                  top: height * 0.3797, // originally 243/640
-                  left: 0,
-                  right: 0,
-                  child: const Center(
-                    child: Text(
-                      'Name',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color.fromRGBO(0, 0, 0, 1),
-                        fontFamily: 'Inter',
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal,
-                        height: 2,
-                      ),
-                    ),
-                  ),
-                ),
-                // Student Number
-                Positioned(
-                  top: height * 0.4531, // originally 290/640
-                  left: 0,
-                  right: 0,
-                  child: const Center(
-                    child: Text(
-                      'Student Number',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color.fromRGBO(0, 0, 0, 1),
-                        fontFamily: 'Inter',
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal,
-                        height: 2,
-                      ),
-                    ),
-                  ),
-                ),
-                // Logout Button
-                Positioned(
-                  top: height * 0.5266, // originally 337/640
-                  left: width * 0.3056,
-                  child: Container(
-                    width: width * 0.3889, // originally 140/360
-                    height: height * 0.0594, // originally 38/640
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromRGBO(2, 46, 6, 1),
-                    ),
+    User? user = FirebaseAuth.instance.currentUser;
+    String email = user?.email ?? "Not signed in";
 
-                    child: const Center(
-                      child: Text(
-                        'Logout',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Patrick Hand',
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                    
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(239, 179, 49, 1),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Hello!',
+                style: GoogleFonts.raleway(
+                  textStyle: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-                // Bottom Container (if needed for styling or additional elements)
-              ],
-            ),
-          );
-        },
+              ),
+              const SizedBox(height: 10),
+              Text(
+                email,
+                style: GoogleFonts.raleway(
+                  textStyle: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              _logout(context),
+            ],
+          ),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromRGBO(2, 46, 6, 1),
-        currentIndex: 1, // Settings page is selected by default
+        backgroundColor: const Color.fromRGBO(2, 46, 6, 1),
+        currentIndex: 1, // Settings is selected
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.white,),
+            icon: Icon(Icons.home, color: Colors.white),
             label: 'Home',
-            backgroundColor: Colors.white,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.white,),
+            icon: Icon(Icons.settings, color: Colors.white),
             label: 'Settings',
-            backgroundColor: Colors.white,
           ),
         ],
         onTap: (index) {
           if (index == 0) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => Home()),
-            );
-          } else if (index == 1) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Settings()),
+              MaterialPageRoute(
+                builder: (context) => Home(reservedAppointment: reservedAppointment),
+              ),
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget _logout(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromRGBO(2, 46, 6, 1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        minimumSize: const Size(double.infinity, 60),
+        elevation: 0,
+      ),
+      onPressed: () async {
+        await AuthService().signout(context: context);
+      },
+      child: const Text(
+        "Sign Out",
+        style: TextStyle(color: Colors.white),
       ),
     );
   }

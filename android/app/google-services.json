@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "763530750987",
+    "project_id": "promiapp-45c92",
+    "storage_bucket": "promiapp-45c92.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763530750987:android:489631145e7d6136c2ab0e",
+        "android_client_info": {
+          "package_name": "com.example.promi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2qjwod6zHtl6l0BoNP8H0qTo5HHsYBIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

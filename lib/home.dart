@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:promi/promiform.dart';
@@ -5,234 +7,298 @@ import 'package:promi/summary.dart';
 import 'package:promi/settings.dart';
 
 class Home extends StatefulWidget {
-  final String?
-      reservedAppointment; // New variable to store appointment details
-
-  const Home({super.key, this.reservedAppointment});
+  const Home({super.key, String? reservedAppointment});
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  String? _reservedAppointment; // Local state to store appointment details
-
-  // Additional variables to store details from the form
-  String courseYear = '';
-  String fullName = '';
-  String reason = '';
-  String balance = '';
-  String amountToPay = '';
-  String timesApplied = '';
-  bool isPaidOnTime = true;
+  String? _reservedAppointment;
+  bool _isLoading = true;
+  List<String> _adminAnnouncements = [];
 
   @override
   void initState() {
     super.initState();
-    _reservedAppointment = widget.reservedAppointment;
+    _checkExistingReservation();
+    listenToReservationUpdates();
+    fetchAdminAnnouncements();
+    listenToAnnouncements();
+  }
+
+  Future<void> _checkExistingReservation() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    var querySnapshot = await FirebaseFirestore.instance
+        .collection('promiform')
+        .where('userId', isEqualTo: user.uid)
+        .get();
+
+    setState(() {
+      if (querySnapshot.docs.isNotEmpty) {
+        _reservedAppointment = querySnapshot.docs.first.id;
+      }
+      _isLoading = false;
+    });
+  }
+
+  void fetchAdminAnnouncements() async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('announcement')
+        .orderBy('timestamp', descending: true) // Orders by latest first
+        .limit(1) // Fetch only the latest announcement
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      setState(() {
+        _adminAnnouncements = [snapshot.docs.first['announcement'].toString()];
+      });
+    }
+  }
+
+  void listenToAnnouncements() {
+    FirebaseFirestore.instance
+        .collection('announcement')
+        .orderBy('timestamp', descending: true) // Orders by latest first
+        .limit(1) // Fetch only the latest announcement
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          _adminAnnouncements = [
+            snapshot.docs.first['announcement'].toString()
+          ];
+        });
+      }
+    });
+  }
+
+  void listenToReservationUpdates() {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    FirebaseFirestore.instance
+        .collection('promiform')
+        .where('userId', isEqualTo: user.uid)
+        .snapshots()
+        .listen((snapshot) {
+      setState(() {
+        _reservedAppointment =
+            snapshot.docs.isNotEmpty ? snapshot.docs.first.id : null;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Home', style: TextStyle(color: Colors.white)),
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color.fromRGBO(2, 46, 6, 1),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          decoration: const BoxDecoration(
-            color: Color.fromRGBO(255, 255, 255, 1),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              // Calendar
-              DatePicker(
-                DateTime.now(),
-                height: 100,
-                width: 80,
-                initialSelectedDate: DateTime.now(),
-                selectionColor: Color.fromRGBO(2, 46, 6, 1),
-                selectedTextColor: Colors.white,
-                dayTextStyle: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Color.fromRGBO(2, 46, 6, 1),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: const BoxDecoration(
+                  color: Color.fromRGBO(255, 255, 255, 1),
                 ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Promissory Appointment',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontFamily: 'Inter',
-                  fontSize: 20,
-                  height: 2,
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  // Navigate to form and wait for result
-                  final result = await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => Promiform(),
-                    ),
-                  );
-
-                  // If result is returned, update the status box and store the details
-                  if (result != null) {
-                    setState(() {
-                      _reservedAppointment = result['reservedAppointment'];
-                      courseYear = result['courseYear'];
-                      fullName = result['fullName']; // Update reserved appointment
-                      reason = result['reason']; // Assuming these fields are returned from the form
-                      balance = result['balance'];
-                      amountToPay = result['amountToPay'];
-                      timesApplied = result['timesApplied'];
-                      isPaidOnTime = result['isPaidOnTime'];
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromRGBO(239, 179, 49, 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  minimumSize:
-                      Size(double.infinity, 69), // Full width & fixed height
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.add, color: Colors.black), // Plus sign
-                    SizedBox(width: 8), // Space between icon and text
-                    Text(
-                      "Reserve Appointment",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 10),
+                    DatePicker(
+                      DateTime.now(),
+                      height: 100,
+                      width: 80,
+                      initialSelectedDate: DateTime.now(),
+                      selectionColor: Color.fromRGBO(2, 46, 6, 1),
+                      selectedTextColor: Colors.white,
+                      dayTextStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Color.fromRGBO(2, 46, 6, 1),
                       ),
                     ),
+                    const Text(
+                      'Announcements',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Inter',
+                        fontSize: 20,
+                        height: 2,
+                      ),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: _adminAnnouncements.isNotEmpty ? 1 : 0,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          margin: EdgeInsets.symmetric(vertical: 5),
+                          color: Color.fromRGBO(239, 179, 49, 1),
+                          child: ListTile(
+                            title: Text(
+                              _adminAnnouncements[index],
+                              style: TextStyle(
+                                fontWeight:
+                                    FontWeight.bold, // Make the text bold
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Promissory Appointment',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Inter',
+                        fontSize: 20,
+                        height: 2,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: (_reservedAppointment == null ||
+                              _reservedAppointment!.isEmpty)
+                          ? () async {
+                              final result = await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => Promiform(),
+                                ),
+                              );
+                              if (result != null) {
+                                setState(() {
+                                  _reservedAppointment =
+                                      result['reservedAppointment'];
+                                });
+                              }
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromRGBO(239, 179, 49, 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        minimumSize: Size(double.infinity, 69),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add, color: Colors.black),
+                          SizedBox(width: 8),
+                          Text(
+                            "Reserve Appointment",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Reserved Appointment',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Inter',
+                        fontSize: 20,
+                        height: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    if (_reservedAppointment == null ||
+                        _reservedAppointment!.isEmpty)
+                      Center(
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          decoration: BoxDecoration(
+                            color: Color.fromRGBO(2, 46, 6, 1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "No Reserved Appointment",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Inter',
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => Summary(),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(239, 179, 49, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            minimumSize: Size(double.infinity, 69),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.visibility, color: Colors.black),
+                              SizedBox(width: 8),
+                              Text(
+                                "View Reserved Appointment",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
-                'Reserved Appointment',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontFamily: 'Inter',
-                  fontSize: 20,
-                  height: 2,
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // If no appointment is reserved, show the message. Otherwise, show the button.
-              if (_reservedAppointment == null || _reservedAppointment!.isEmpty)
-                Center(
-                  child: Container(
-                    width: double.infinity, // Makes the box take full width
-                    padding: EdgeInsets.symmetric(
-                        vertical: 15), // Vertical padding only
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(2, 46, 6, 1), // Background color
-                      borderRadius: BorderRadius.circular(10), // Rounded corners
-                    ),
-                    alignment: Alignment.center, // Centers the text
-                    child: Text(
-                      "No Reserved Appointment",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Inter',
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                )
-              else
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      // Navigate to the Summary page with all the relevant details
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => Summary(
-                            reservedAppointment: _reservedAppointment,
-                            reason: reason,
-                            balance: balance,
-                            amountToPay: amountToPay,
-                            timesApplied: timesApplied,
-                            isPaidOnTime: isPaidOnTime,
-                            courseYear: courseYear,
-                            fullName: fullName,
-                          ),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(239, 179, 49, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      minimumSize:
-                          Size(double.infinity, 69), // Full width & fixed height
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.visibility, color: Colors.black), // Eye icon
-                        SizedBox(width: 8), // Space between icon and text
-                        Text(
-                          "View Reserved Appointment",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
-
-
+            ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromRGBO(2, 46, 6, 1),
-        currentIndex: 0, // Home is selected by default
+        backgroundColor: const Color.fromRGBO(2, 46, 6, 1),
+        currentIndex: 0, // Home is selected
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.white,),
+            icon: Icon(Icons.home, color: Colors.white),
             label: 'Home',
-            backgroundColor: Colors.white,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.white,),
+            icon: Icon(Icons.settings, color: Colors.white),
             label: 'Settings',
-            backgroundColor: Colors.white,
           ),
         ],
         onTap: (index) {
-          if (index == 0) {
+          if (index == 1) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => Home()),
-            );
-          } else if (index == 1) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Settings()),
+              MaterialPageRoute(
+                builder: (context) =>
+                    Setting(reservedAppointment: _reservedAppointment),
+              ),
             );
           }
         },

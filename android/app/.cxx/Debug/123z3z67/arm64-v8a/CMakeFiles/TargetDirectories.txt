@@ -1,0 +1,2 @@
+C:/flutter projects/PromiApp/android/app/.cxx/Debug/123z3z67/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/flutter projects/PromiApp/android/app/.cxx/Debug/123z3z67/arm64-v8a/CMakeFiles/rebuild_cache.dir
