@@ -3,6 +3,7 @@ import 'package:promi/home.dart';
 import 'package:promi/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class Setting extends StatelessWidget {
   final String? reservedAppointment; // Receive reserved appointment data
@@ -15,6 +16,7 @@ class Setting extends StatelessWidget {
     String email = user?.email ?? "Not signed in";
 
     return Scaffold(
+      // extendBody: true,
       backgroundColor: const Color.fromRGBO(239, 179, 49, 1),
       body: SafeArea(
         child: Padding(
@@ -49,27 +51,25 @@ class Setting extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromRGBO(2, 46, 6, 1),
-        currentIndex: 1, // Settings is selected
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.white),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.white),
-            label: 'Settings',
-          ),
+      bottomNavigationBar: CurvedNavigationBar(
+        index: 1,
+        backgroundColor: Colors.transparent,
+        color: Color.fromRGBO(2, 46, 6, 1),
+        buttonBackgroundColor: Color.fromRGBO(2, 46, 6, 1),
+        height: 60,
+        animationDuration: Duration(milliseconds: 300),
+        items: const <Widget>[
+          Icon(Icons.home, size: 30, color: Colors.white),
+          Icon(Icons.settings, size: 30, color: Color.fromRGBO(239, 179, 49, 1)),
         ],
         onTap: (index) {
           if (index == 0) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => Home(reservedAppointment: reservedAppointment),
-              ),
+              MaterialPageRoute(builder: (context) => Home()),
             );
+          } else if (index == 1) {
+            // already on settings
           }
         },
       ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:promi/promiform.dart';
 import 'package:promi/summary.dart';
 import 'package:promi/settings.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, String? reservedAppointment});
@@ -94,6 +95,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // extendBody: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Home', style: TextStyle(color: Colors.white)),
@@ -278,27 +280,24 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromRGBO(2, 46, 6, 1),
-        currentIndex: 0, // Home is selected
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.white),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.white),
-            label: 'Settings',
-          ),
+      bottomNavigationBar: CurvedNavigationBar(
+        index: 0,
+        backgroundColor: Colors.transparent,
+        color: Color.fromRGBO(2, 46, 6, 1),
+        buttonBackgroundColor: Color.fromRGBO(2, 46, 6, 1),
+        height: 60,
+        animationDuration: Duration(milliseconds: 300),
+        items: const <Widget>[
+          Icon(Icons.home, size: 30, color: Color.fromRGBO(239, 179, 49, 1)),
+          Icon(Icons.settings, size: 30, color: Colors.white),
         ],
         onTap: (index) {
-          if (index == 1) {
+          if (index == 0) {
+            // already on home
+          } else if (index == 1) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    Setting(reservedAppointment: _reservedAppointment),
-              ),
+              MaterialPageRoute(builder: (context) => Setting()),
             );
           }
         },

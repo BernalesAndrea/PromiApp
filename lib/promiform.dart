@@ -28,13 +28,6 @@ class _PromiformState extends State<Promiform> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back),
-        //   onPressed: () {
-        //     Navigator.of(context).pushReplacement(
-        //         MaterialPageRoute(builder: (BuildContext context) => Home()));
-        //   },
-        // ),
         title: const Text('Promissory Schedule'),
       ),
       body: SingleChildScrollView(
